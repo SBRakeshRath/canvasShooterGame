@@ -16,71 +16,154 @@
       href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
       rel="stylesheet"
     />
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap"
+      rel="stylesheet"
+    />
     <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-      canvas {
-        aspect-ratio: unset;
-        /* height: 100vh; */
-        /* width:100vw; */
-        display: block;
-        background-color: #000;
-      }
-      body {
-        position: relative;
-        cursor: pointer;
-        user-select: none; /* supported by Chrome and Opera */
-        -webkit-user-select: none; /* Safari */
-        -khtml-user-select: none; /* Konqueror HTML */
-        -moz-user-select: none; /* Firefox */
-        -ms-user-select: none; /* Internet Explorer/Edge */
-        -webkit-tap-highlight-color: transparent;
-        touch-action: manipulation;
-        touch-action: none;
-        height: 100vh;
-        width: 100vw;
-        overflow: hidden;
-      }
-      #score {
-        display: flex;
-        flex-direction: column;
-        /* background-color: aliceblue; */
-        position: absolute;
-        left: 100%;
-        top: 0%;
-        transform: translate(-100%, -0%);
-        z-index: 500000;
-        user-select: none; /* supported by Chrome and Opera */
-        -webkit-user-select: none; /* Safari */
-        -khtml-user-select: none; /* Konqueror HTML */
-        -moz-user-select: none; /* Firefox */
-        -ms-user-select: none; /* Internet Explorer/Edge */
-      }
-      #score .text {
-        display: flex;
-        /* background-color: red; */
-        padding: 1vh 2vw;
-        font-family: "Press Start 2P", cursive;
-        font-size: 2vw;
-        color: #11ff06;
-      }
-      #score .count {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-family: "Press Start 2P", cursive;
-        font-size: 1.5vw;
-        color: aliceblue;
-      }
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+        canvas {
+          aspect-ratio: unset;
+          /* height: 100vh; */
+          /* width:100vw; */
+          display: block;
+          background-color: #000;
+        }
+        body {
+          position: relative;
+          cursor: pointer;
+          user-select: none; /* supported by Chrome and Opera */
+          -webkit-user-select: none; /* Safari */
+          -khtml-user-select: none; /* Konqueror HTML */
+          -moz-user-select: none; /* Firefox */
+          -ms-user-select: none; /* Internet Explorer/Edge */
+          -webkit-tap-highlight-color: transparent;
+          touch-action: manipulation;
+          touch-action: none;
+          height: 100vh;
+          width: 100vw;
+          overflow: hidden;
+        }
+        #score {
+          display: flex;
+          flex-direction: column;
+          /* background-color: aliceblue; */
+          position: absolute;
+          left: 100%;
+          top: 0%;
+          transform: translate(-100%, -0%);
+          z-index: 500000;
+          user-select: none; /* supported by Chrome and Opera */
+          -webkit-user-select: none; /* Safari */
+          -khtml-user-select: none; /* Konqueror HTML */
+          -moz-user-select: none; /* Firefox */
+          -ms-user-select: none; /* Internet Explorer/Edge */
+        }
+        #score .text {
+          display: flex;
+          /* background-color: red; */
+          padding: 1vh 2vw;
+          font-family: "Press Start 2P", cursive;
+          font-size: 2vw;
+          color: #11ff06;
+        }
+        #score .count {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-family: "Press Start 2P", cursive;
+          font-size: 1.5vw;
+          color: aliceblue;
+        }
+        #level {
+          display: flex;
+          flex-direction: column;
+          /* background-color: aliceblue; */
+          position: absolute;
+          left: 0;
+          top: 0%;
+          transform: translate(0%, -0%);
+          z-index: 500000;
+          user-select: none; /* supported by Chrome and Opera */
+          -webkit-user-select: none; /* Safari */
+          -khtml-user-select: none; /* Konqueror HTML */
+          -moz-user-select: none; /* Firefox */
+          -ms-user-select: none; /* Internet Explorer/Edge */
+        }
+        #level .text {
+          display: flex;
+          /* background-color: red; */
+          padding: 1vh 2vw;
+          font-family: "Press Start 2P", cursive;
+          font-size: 2vw;
+          color: #11ff06;
+        }
+        #level .count {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-family: "Press Start 2P", cursive;
+          font-size: 1.5vw;
+          color: aliceblue;
+        }
+        .card {
+          width: 300px;
+      /* height: 169px; */
+      position: absolute;
+      z-index: 1000000000000000;
+      transform: translate( -50% , -50%);
+      left: 50%;
+      top: 50%;
+      background-color: aqua;
+      display: flex;
+      flex-direction: column;
+      max-width: 100%;
+        }
+        .card .text {
+          display: flex;
+      /* background-color: red; */
+      padding: 1vh 2vw;
+      font-family: 'Roboto', sans-serif;
+      font-size: 2rem;
+      /* color: #11ff06; */
+      text-align: center;
+      align-items: center;
+      justify-content: center;
+        }
+        .card button {
+          width: 90%;
+      margin: auto;
+      justify-self: center;
+      /* margin top FONT-VARIANT: JIS04; */
+      margin-bottom: 40px;
+      margin-top: 40px;
+      padding: 10px 0;
+      background-color: #1c1ce0;
+      color: white;
+      outline: none;
+      border: none;
+      cursor: pointer;
+        }
     </style>
   </head>
   <body>
     <div id="score">
       <div class="text" id="text">Score</div>
       <div class="count" id="count">0</div>
+    </div>
+    <div id="level">
+      <div class="text" id="text">LeveL</div>
+      <div class="count" id="levelCount">0</div>
+    </div>
+    <div class="card" id="scoreCard">
+      <div class="text">Your Score is :-</div>
+      <div class="text" id = "finalScore">0</div>
+      <button onclick="startGame(event)">Start Game</button>
     </div>
     <canvas> </canvas>
     <!-- <div>

@@ -1,14 +1,17 @@
 const canvas = document.querySelector("canvas");
 const count = document.getElementById("count");
+const levelCountDiv = document.getElementById("levelCount");
+const scoreCard = document.getElementById("scoreCard");
+const finalScore = document.getElementById("finalScore");
 const c = canvas.getContext("2d");
 canvas.width = document.body.offsetWidth;
 canvas.height = document.body.offsetHeight;
 const superSize = 400;
 let animateFrame;
-let stopAnimation = false;
+let stopAnimation = true;
 let score = 0;
-// console.log(window.innerWidth);
-// console.log(window.innerHeight);
+let IntervalFunction ;
+const levelScore = 5000;
 class Player {
   constructor(x, y, radius, color) {
     this.x = x;
@@ -110,7 +113,7 @@ if (canvas.width < 400 || canvas.height < 400) {
   player = new Player(x, canvas.height - 30, PlayerRadius, "white");
 }
 
-const projectiles = [];
+let projectiles = [];
 const particles = [];
 function animateProjectile() {
   projectiles.forEach((element) => {
@@ -119,11 +122,19 @@ function animateProjectile() {
 }
 
 //enemy
-const enemies = [];
+let enemies = [];
+
 function spawnEnemies() {
-  setInterval(() => {
+  if(stopAnimation) return ;
+
+  let IntervalFunction = setInterval(() => {
     if (stopAnimation) {
+      window.clearInterval(IntervalFunction );
       return;
+    }
+    let level = Math.floor((score + levelScore) / levelScore);
+    if (level > 25) {
+      level = 25;
     }
     const RI = Math.floor(1 + Math.random() * (4 + 1 - 1));
     let x, y;
@@ -167,14 +178,16 @@ function spawnEnemies() {
       }
     }
     const angel = Math.atan2(player.y - y, player.x - x);
+    
     const velocity = {
-      x: Math.cos(angel),
-      y: Math.sin(angel),
+      x: Math.cos(angel) * (1 + level / 6),
+      y: Math.sin(angel) * (1 + level / 6),
     };
-    let radMax = 50;
+    console.log(level);
+    let radMax = 35;
     const percentageRadMax = (radMax * 100) / superSize;
     let radMin = 20;
-    const percentageRadMin = (radMax * 100) / superSize;
+    const percentageRadMin = (radMin * 100) / superSize;
 
     if (canvas.width < superSize || canvas.height < superSize) {
       const min = Math.min(canvas.height, canvas.width);
@@ -183,12 +196,12 @@ function spawnEnemies() {
     }
     const rad = Math.floor(radMin + Math.random() * (radMax - radMin + 1));
     // const rad = 30;
-    // if (enemies.length > 0) return;
+    // if (enemies.length > 4) return;
     const color = `hsl(${Math.random() * 360},50%,50%)`;
     enemies.push(new Enemy(x, y, rad, color, velocity));
   }, 1000);
 }
-spawnEnemies();
+
 function animateEnemy() {
   enemies.forEach((element) => {
     element.update();
@@ -201,8 +214,9 @@ function animate() {
   //define size
 
   //....
-
+  if(stopAnimation) return;
   count.innerHTML = score;
+  levelCountDiv.innerHTML = Math.floor((score + levelScore) / levelScore);
   c.fillStyle = "rgba(0,0,0,0.2)";
   c.fillRect(0, 0, canvas.width, canvas.height);
   player.draw();
@@ -220,6 +234,10 @@ function animate() {
     const distP = Math.hypot(player.x - el.x, player.y - el.y);
     if (distP - el.radius - player.radius < 0) {
       stopAnimation = true;
+      scoreCard.style.display = "flex";
+      finalScore.innerHTML = score;
+      c.clearRect(0 , 0 , canvas.width , canvas.height)
+      
     }
 
     // detect enemy collision with projectile
@@ -243,7 +261,7 @@ function animate() {
           );
         }
         //shrink enemy
-        let shrinkAmount = 10;
+        let shrinkAmount = 5;
         const percentage = (shrinkAmount * 100) / superSize;
 
         if (canvas.width < superSize || canvas.height < superSize) {
@@ -300,10 +318,26 @@ function animate() {
   // end
   animateFrame = window.requestAnimationFrame(animate);
 }
-animate();
+
+function startGame(e) {
+  e.stopPropagation();
+  window.cancelAnimationFrame(animateFrame)
+  stopAnimation = false;
+  enemies = [];
+  projectiles = [];
+  animateFrame;
+  score = 0;
+  scoreCard.style.display = "none";
+  animate();
+  spawnEnemies();
+}
 
 //click function
 function clickForProjectile(x, y) {
+  let level = Math.floor((score + levelScore) / levelScore);
+  if (level > 25) {
+    level = 25;
+  }
   const angel = Math.atan2(y - player.y, x - player.x);
   const velocity = {
     x: Math.cos(angel) * 10,
@@ -311,23 +345,31 @@ function clickForProjectile(x, y) {
   };
   let radius = 10;
   const percentage = (radius * 100) / superSize;
-  console.log(percentage);
   if (canvas.height < superSize || canvas.width < superSize) {
     const min = Math.min(canvas.height, canvas.width);
     radius = (percentage / 100) * min;
   }
+
   projectiles.push(
     new Projectile(player.x, player.y, radius, "#fff", velocity)
   );
+  // }
+  const timeOut = (1000 / 60) * 10;
+  for (let n = 0; n < level / 2 - 1; n++) {
+    setTimeout(() => {
+      projectiles.push(
+        new Projectile(player.x, player.y, radius, "#fff", velocity)
+      );
+    }, timeOut * (n + 1));
+  }
 }
 function clickFunction(x, y) {
+  if (stopAnimation) return;
   clickForProjectile(x, y);
 }
 let touch = false;
 window.addEventListener("touchstart", (e) => {
-  console.log("clicked");
 
-  console.log(e.touches[0].clientX);
   clickFunction(e.touches[0].clientX, e.touches[0].clientY);
   touch = true;
 });
@@ -335,7 +377,6 @@ window.addEventListener("mousedown", (e) => {
   if (touch) {
     return;
   }
-  console.log(e.clientX);
   clickFunction(e.clientX, e.clientY);
   return false;
 });
@@ -366,17 +407,3 @@ window.addEventListener("resize", (e) => {
   }
 });
 
-//Tester................>>>>>>>>>>>>>>>>>>>>>
-
-// const div = document.querySelector("div");
-// function buttonClick(){
-//     console.log("button clicked");
-//     repeatOften()
-
-// }
-
-// function repeatOften() {
-//     // Do whatever
-//     console.log("repeating");
-//     requestAnimationFrame(repeatOften);
-//   }
