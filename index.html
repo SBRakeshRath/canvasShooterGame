@@ -23,7 +23,7 @@
         box-sizing: border-box;
       }
       canvas {
-        aspect-ratio: auto;
+        aspect-ratio: unset;
         /* height: 100vh; */
         /* width:100vw; */
         display: block;
@@ -39,6 +39,10 @@
         -ms-user-select: none; /* Internet Explorer/Edge */
         -webkit-tap-highlight-color: transparent;
         touch-action: manipulation;
+        touch-action: none;
+        height: 100vh;
+        width: 100vw;
+        overflow: hidden;
       }
       #score {
         display: flex;

@@ -1,9 +1,9 @@
 const canvas = document.querySelector("canvas");
 const count = document.getElementById("count");
 const c = canvas.getContext("2d");
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
-const superSize = 400 ;
+canvas.width = document.body.offsetWidth;
+canvas.height = document.body.offsetHeight;
+const superSize = 400;
 let animateFrame;
 let stopAnimation = false;
 let score = 0;
@@ -96,16 +96,18 @@ class Enemy {
     this.y = this.y + this.velocity.y;
   }
 }
-const  x = canvas.width / 2,
+const x = canvas.width / 2,
   y = canvas.height / 2;
 
 //Player ...>>>>>>
 
+let PlayerRadius = 30;
+let player = new Player(x, y, 30, "white");
 
-let  player = new Player(x, y, 30, "white");
-
-if(canvas.width < 400 || canvas.height < 400  ){
- player = new Player(x , canvas.height - 30 , 30 ,"white" )
+if (canvas.width < 400 || canvas.height < 400) {
+  const percentage = (PlayerRadius * 100) / superSize;
+  PlayerRadius = superSize * (percentage / 100);
+  player = new Player(x, canvas.height - 30, PlayerRadius, "white");
 }
 
 const projectiles = [];
@@ -144,7 +146,6 @@ function spawnEnemies() {
           y = 0 - 20;
           break;
       }
-      
     } else {
       switch (RI) {
         case 1:
@@ -170,9 +171,19 @@ function spawnEnemies() {
       x: Math.cos(angel),
       y: Math.sin(angel),
     };
-    const rad = Math.floor(10 + Math.random() * (40 - 10 + 1));
+    let radMax = 50;
+    const percentageRadMax = (radMax * 100) / superSize;
+    let radMin = 20;
+    const percentageRadMin = (radMax * 100) / superSize;
+
+    if (canvas.width < superSize || canvas.height < superSize) {
+      const min = Math.min(canvas.height, canvas.width);
+      radMax = (percentageRadMax / 100) * min;
+      radMin = (percentageRadMin / 100) * min;
+    }
+    const rad = Math.floor(radMin + Math.random() * (radMax - radMin + 1));
     // const rad = 30;
-    // if (enemies.length > 0) return;Fnew
+    // if (enemies.length > 0) return;
     const color = `hsl(${Math.random() * 360},50%,50%)`;
     enemies.push(new Enemy(x, y, rad, color, velocity));
   }, 1000);
@@ -232,10 +243,26 @@ function animate() {
           );
         }
         //shrink enemy
-        if (el.radius - 15 > 8) {
+        let shrinkAmount = 10;
+        const percentage = (shrinkAmount * 100) / superSize;
+
+        if (canvas.width < superSize || canvas.height < superSize) {
+          const min = Math.min(canvas.height, canvas.width);
+          shrinkAmount = (percentage / 100) * min;
+        }
+
+        let minHeight = 20;
+        const percentageH = (minHeight * 100) / superSize;
+
+        if (canvas.width < superSize || canvas.height < superSize) {
+          const min = Math.min(canvas.height, canvas.width);
+          minHeight = (percentageH / 100) * min;
+        }
+
+        if (el.radius - minHeight > shrinkAmount) {
           // el.radius =  10;
           gsap.to(el, {
-            radius: el.radius - 10,
+            radius: el.radius - shrinkAmount,
           });
           return;
         }
@@ -283,14 +310,14 @@ function clickForProjectile(x, y) {
     y: Math.sin(angel) * 10,
   };
   let radius = 10;
-  const percentage = (radius * 100) / superSize  ;
+  const percentage = (radius * 100) / superSize;
   console.log(percentage);
-    if(canvas.height < superSize || canvas.width < superSize){
-    const min = Math.min(canvas.height , canvas . width) ; 
-      radius = (percentage /100) * min
+  if (canvas.height < superSize || canvas.width < superSize) {
+    const min = Math.min(canvas.height, canvas.width);
+    radius = (percentage / 100) * min;
   }
   projectiles.push(
-    new Projectile(player.x, player.y , radius, "#fff", velocity)
+    new Projectile(player.x, player.y, radius, "#fff", velocity)
   );
 }
 function clickFunction(x, y) {
@@ -312,9 +339,32 @@ window.addEventListener("mousedown", (e) => {
   clickFunction(e.clientX, e.clientY);
   return false;
 });
-window.addEventListener("dblclick" , (e)=>{
+window.addEventListener("dblclick", (e) => {
   e.preventDefault();
-})
+});
+window.addEventListener("resize", (e) => {
+  canvas.width = document.body.offsetWidth;
+  canvas.height = document.body.offsetHeight;
+  let PlayerRadius = 30;
+  const percentage = (PlayerRadius * 100) / superSize;
+  player = new Player(
+    canvas.width / 2,
+    canvas.height / 2,
+    PlayerRadius,
+    "white"
+  );
+
+  if (canvas.width < superSize || canvas.height < superSize) {
+    const min = Math.min(canvas.height, canvas.width);
+    PlayerRadius = (percentage / 100) * min;
+    player = new Player(
+      canvas.width / 2,
+      canvas.height - 30,
+      PlayerRadius,
+      "white"
+    );
+  }
+});
 
 //Tester................>>>>>>>>>>>>>>>>>>>>>
 
