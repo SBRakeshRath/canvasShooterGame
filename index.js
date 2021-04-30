@@ -356,7 +356,7 @@ function clickForProjectile(x, y) {
   );
   // }
   const timeOut = (1000 / 60) * 10;
-  for (let n = 0; n < level / 2 - 1; n++) {
+  for (let n = 0; n < level / 5 - 1; n++) {
     setTimeout(() => {
       projectiles.push(
         new Projectile(player.x, player.y, radius, "#fff", velocity)
