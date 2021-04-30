@@ -128,6 +128,7 @@ function spawnEnemies() {
   if(stopAnimation) return ;
 
   let IntervalFunction = setInterval(() => {
+    console.log("inteval")
     if (stopAnimation) {
       window.clearInterval(IntervalFunction );
       return;
@@ -321,7 +322,7 @@ function animate() {
 
 function startGame(e) {
   e.stopPropagation();
-  window.cancelAnimationFrame(animateFrame)
+  // window.cancelAnimationFrame(animateFrame)
   stopAnimation = false;
   enemies = [];
   projectiles = [];
